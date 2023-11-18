@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello
+  name: hello-deployment-svc-clusterip
 spec:
   replicas: 3
   selector:
     matchLabels:
-      role: hello
+      role: hello-prueba-pod
   template:
     metadata:
       labels:
-        role: hello
+        role: hello-prueba-pod
     spec:
       containers:
-      - name: hello
+      - name: hello-container
         image: gcr.io/google-samples/hello-app:1.0
         ports:
         - containerPort: 8080
@@ -22,10 +22,19 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: hello
+  name: hello-svc-clusterip
 spec:
   ports:
   - port: 8080
     targetPort: 8080
   selector:
-    role: hello
+    role: hello-prueba-pod
+
+# For access from outside the cluster:
+    # Generate a proxy with: kubectl proxy
+    # Then access via: http://localhost:8001/api/v1/namespaces/default/services/hello-svc-clusterip:8080/proxy/
+
+# For access from inside the cluster within a random pod with curl installed:
+    # you can create a pod with ubuntu and then install curl inside it: ./06-randompod.yaml
+    # kubectl exec -it <pod-name> -- curl http://hello-svc-clusterip:8080
+

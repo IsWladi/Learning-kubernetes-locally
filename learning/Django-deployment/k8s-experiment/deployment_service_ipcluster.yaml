@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gamesite-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: gamesite
+      rol: web
+  template:
+    metadata:
+      labels:
+        app: gamesite
+        rol: web
+    spec:
+      containers:
+      - name: gamesite-web
+        image: iswladi/django-example:v2-no-db
+        ports:
+        - containerPort: 8000
+        command: ["/bin/sh"]
+        args: ["-c", "python manage.py migrate && python manage.py runserver"]
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gamesite-service
+spec:
+  ports:
+  - port: 8000
+    targetPort: 8000
+  selector:
+    app: gamesite
+    rol: web
